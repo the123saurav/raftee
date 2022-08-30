@@ -12,10 +12,14 @@ Raftee is implemented on top of latest Java 19 features like:
 
 This allows for a system where the JVM can optimize on IO based workflows.
 
+## Dependencies
+- Flatbuf
 
 # Building project
 This project uses maven for builds.
 Requirements:
-- maven CLI(tested with 3.6.2)
-- Java 8
+- maven CLI(tested with 3.8.6)
+- Java 19
+
+
 
