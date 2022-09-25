@@ -4,3 +4,5 @@
 
 ## Build
 */target/
+raftee-demo-app/dependency-reduced-pom.xml
+.run/

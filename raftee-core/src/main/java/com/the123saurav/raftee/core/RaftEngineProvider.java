@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class RaftEngineProvider {
 
-    public static RaftEngine of(RaftConfig config) {
+    public static RaftEngine of(RaftConfig config) throws IOException {
         boolean isValid = config.getClusterNodes().stream()
                 .map(cn -> {
                     try {

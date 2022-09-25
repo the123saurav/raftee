@@ -18,7 +18,9 @@ import java.util.Set;
 public class RaftConfig {
     private final String clusterName;
     private final Set<String> clusterNodes;
-    private final String dataDir;
+    private final Path dataDir;
+    private final int connectTimeoutMs;
+    private final int socketTimeoutMs;
 
     /**
      * Uses custom builder class
@@ -48,9 +50,14 @@ public class RaftConfig {
                     }
                 });
 
-                Path dataDirPath = Path.of(super.dataDir);
-                Validate.isTrue(Files.isWritable(dataDirPath) && Files.isReadable(dataDirPath),
+                Validate.isTrue(Files.isWritable(super.dataDir) && Files.isReadable(super.dataDir),
                         "Data directory %s is not readable/writable", super.dataDir);
+
+                Validate.isTrue(super.connectTimeoutMs > 0, "Connect timeout must be set, currently: "
+                + super.connectTimeoutMs);
+
+                Validate.isTrue(super.socketTimeoutMs > 0, "Socket timeout must be set, currently: "
+                        + super.socketTimeoutMs);
             } catch (NullPointerException | IllegalArgumentException ex){
                 throw new BadConfigException("bad raft config", ex);
             }
@@ -61,6 +68,6 @@ public class RaftConfig {
 
     @Override
     public RaftConfig clone() {
-        return new RaftConfig(clusterName, new HashSet<>(clusterNodes), dataDir);
+        return new RaftConfig(clusterName, new HashSet<>(clusterNodes), dataDir, connectTimeoutMs, socketTimeoutMs);
     }
 }

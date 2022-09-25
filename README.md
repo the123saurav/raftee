@@ -21,5 +21,10 @@ Requirements:
 - maven CLI(tested with 3.8.6)
 - Java 19
 
+# Running locally
+This project uses maven shade plugin to create an uber jar.
+- mvn19 clean verify
+- ~/jdk-19.jdk/Contents/Home/bin/java --enable-preview --add-modules jdk.incubator.concurrent -jar /Users/prsaurav/personal/raftee/raftee-demo-app/target/raftee-demo-app-1.0-SNAPSHOT.jar
+
 
 
