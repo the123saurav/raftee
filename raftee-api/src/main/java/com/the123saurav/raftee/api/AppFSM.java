@@ -10,7 +10,7 @@ import java.util.concurrent.CompletableFuture;
  * with client. Raft engine provides the durably committed data to
  * FSM so that client can apply it.
  */
-public interface FSM {
+public interface AppFSM {
 
     public static class Record {
         byte[] command;

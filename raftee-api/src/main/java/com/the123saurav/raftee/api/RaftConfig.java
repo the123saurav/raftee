@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.ToString;
 import org.apache.commons.lang3.Validate;
 
+import java.net.InetSocketAddress;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -17,7 +17,7 @@ import java.util.Set;
 @Getter
 public class RaftConfig {
     private final String clusterName;
-    private final Set<String> clusterNodes;
+    private final Set<InetSocketAddress> clusterNodes;
     private final Path dataDir;
     private final int connectTimeoutMs;
     private final int socketTimeoutMs;
@@ -40,14 +40,9 @@ public class RaftConfig {
 
                 Validate.noNullElements(super.clusterNodes, "ClusterName '%s' can not be blank", super.clusterName);
                 super.clusterNodes.forEach(cn -> {
-                    Validate.notBlank(cn, "ClusterNode element '%s' can not be blank", cn);
-                    try {
-                        URI nodeURI = new URI("raft://" + cn);
-                        Validate.notBlank(nodeURI.getHost(), "ClusterNode element '%s' is not valid", cn);
-                        Validate.isTrue(nodeURI.getPort() != -1, "ClusterNode element '%s' is not valid", cn);
-                    } catch (URISyntaxException e) {
-                        throw new IllegalArgumentException(String.format("ClusterNode element '%s' is not valid", cn));
-                    }
+                    Validate.notNull(cn, "ClusterNode element '%s' can not be blank", cn);
+                    Validate.notBlank(cn.getHostName(), "ClusterNode element '%s' host is not valid", cn);
+                    Validate.isTrue(cn.getPort() != -1, "ClusterNode element '%s' port is not valid", cn);
                 });
 
                 Validate.isTrue(Files.isWritable(super.dataDir) && Files.isReadable(super.dataDir),

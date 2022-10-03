@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
+import java.util.function.BiFunction;
 
 import static com.the123saurav.raftee.core.network.message.MessageRegistry.APPEND_ENTRY_REQUEST;
 import static com.the123saurav.raftee.core.network.message.MessageRegistry.APPEND_ENTRY_RESPONSE;
@@ -123,9 +124,9 @@ public class Peer {
                     }
                     switch (readBuf.get()) {
                         case APPEND_ENTRY_REQUEST:
-                            handleAppendEntryRequest(readBuf, (short) (msgSz - 1));
+                            handleRequest(AppendEntryRequest::from, readBuf, (short) (msgSz - 1));
                         case APPEND_ENTRY_RESPONSE:
-                            handleAppendEntryResponse(readBuf, (short) (msgSz - 1));
+                            handleRequest(AppendEntryResponse::from, readBuf, (short) (msgSz - 1));
 
                     }
                 } catch (final BufferOverflowException ex) {
@@ -145,21 +146,12 @@ public class Peer {
         }
     }
 
-    private void handleAppendEntryRequest(ByteBuffer buffer, short msgSz) {
-        AppendEntryRequest request = AppendEntryRequest.from(buffer, msgSz);
+    private void handleRequest(BiFunction<ByteBuffer, Short, Message> deserializer, ByteBuffer buffer, short msgSz) {
+        Message request = deserializer.apply(buffer, msgSz);
         // Should never happen
         if (request == null) {
-            throw new IllegalStateException("JoinClusterResponse is null unexpectedly");
+            throw new IllegalStateException("Request " +  request.getClass() + " is null unexpectedly");
         }
         incomingMsgQ.add(request);
-    }
-
-    private void handleAppendEntryResponse(ByteBuffer buffer, short msgSz) {
-        AppendEntryResponse response = AppendEntryResponse.from(buffer, msgSz);
-        // Should never happen
-        if (response == null) {
-            throw new IllegalStateException("JoinClusterResponse is null unexpectedly");
-        }
-        incomingMsgQ.add(response);
     }
 }
